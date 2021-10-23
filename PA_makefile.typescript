@@ -1,0 +1,290 @@
+Script started on 2021-10-21 22:52:57+05:45 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="79" LINES="23"]
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat Makefile 
+all: hello
+
+hello: main.o trimmer.o parser.o
+	g++ main.o trimmer.o parser.o -o hello
+
+main.o: main.cpp
+	g++ -c main.cpp
+
+trimmer.o: trimmer.cpp
+	g++ -c trimmer.cpp
+
+parser.o: parser.cpp
+	g++ -c parser.cpp
+
+clean:
+	rm -rf *o hello]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat main.cpp 
+#include "func.h"
+
+int main(int argc, char* argv[])
+{
+    parse_url("http://www.google.com");
+    parse_url("https://mail.google.com/mail/");
+    parse_url("https://www.google.com:443/webhp?gws_rd=ssl");
+    return 0;
+}
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat func.h 
+#include <iostream>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+string _trim(const string& str);
+void parse_url(const string& raw_url);
+
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat trimmer.cpp 
+#include "func.h"
+
+string _trim(const string& str)
+{
+    size_t start = str.find_first_not_of(" \n\r\t");
+    size_t until = str.find_last_not_of(" \n\r\t");
+    string::const_iterator i = start==string::npos ? str.begin() : str.begin() + start;
+    string::const_iterator x = until==string::npos ? str.end()   : str.begin() + until+1;
+    return string(i,x);
+}]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat parser.cpp 
+#include "func.h"
+
+void parse_url(const string& raw_url) //no boost
+{
+    string path,domain,x,protocol,port,query;
+    int offset = 0;
+    size_t pos1,pos2,pos3,pos4;
+    x = _trim(raw_url);
+    offset = offset==0 && x.compare(0, 8, "https://")==0 ? 8 : offset;
+    offset = offset==0 && x.compare(0, 7, "http://" )==0 ? 7 : offset;
+    pos1 = x.find_first_of('/', offset+1 );
+    path = pos1==string::npos ? "" : x.substr(pos1);
+    domain = string( x.begin()+offset, pos1 != string::npos ? x.begin()+pos1 : x.end() );
+    path = (pos2 = path.find("#"))!=string::npos ? path.substr(0,pos2) : path;
+    port = (pos3 = domain.find(":"))!=string::npos ? domain.substr(pos3+1) : "";
+    domain = domain.substr(0, pos3!=string::npos ? pos3 : domain.length());
+    protocol = offset > 0 ? x.substr(0,offset-3) : "";
+    query = (pos4 = path.find("?"))!=string::npos ? path.substr(pos4+1) : "";
+    path = pos4!=string::npos ? path.substr(0,pos4) : path;
+    cout << "[" << raw_url << "]" << endl;
+    cout << "protocol: " << protocol << endl;
+    cout << "domain: " << domain << endl;
+    cout << "port: " << port << endl;
+    cout << "path: " << path << endl;
+    cout << "query: " << query << endl;
+}]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ make
+g++ -c main.cpp
+g++ -c trimmer.cpp
+g++ -c parser.cpp
+g++ main.o trimmer.o parser.o -o hello
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ ./hello 
+[http://www.google.com]
+protocol: http
+domain: www.google.com
+port: 
+path: 
+query: 
+[https://mail.google.com/mail/]
+protocol: https
+domain: mail.google.com
+port: 
+path: /mail/
+query: 
+[https://www.google.com:443/webhp?gws_rd=ssl]
+protocol: https
+domain: www.google.com
+port: 443
+path: /webhp
+query: gws_rd=ssl
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vim main.cpp 
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[1;23r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[23;1H"main.cpp" 9L, 220C[2;1H▽[6n[2;1H  [1;1H[>c]10;?]11;?[1;1H[35m#include [m[31m"func.h"[m
+
+[32mint[m main([32mint[m argc, [32mchar[m* argv[])
+{
+    parse_url([31m"http://www.google.com"[m);
+    parse_url([31m"https://mail.google.com/mail/"[m);
+    parse_url([31m"https://www.google.com:443/webhp?gws_rd=ssl"[m);
+    [38;5;130mreturn[m [31m0[m;
+}
+[94m~                                                                              [11;1H~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll[1;1H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\[27m[23m[29m[m[H[2J[?25l[1;1H[38;5;81m#include [m[95m"func.h"[m
+
+[38;5;121mint[m main([38;5;121mint[m argc, [38;5;121mchar[m* argv[])
+{
+    parse_url([95m"http://www.google.com"[m);
+    parse_url([95m"https://mail.google.com/mail/"[m);
+    parse_url([95m"https://www.google.com:443/webhp?gws_rd=ssl"[m);
+    [93mreturn[m [95m0[m;
+}
+[94m~                                                                              [11;1H~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll"main.cpp" 9L, 220C[1;1H[?25h[?25l[23;52H~@k[1;1H[23;52H   [1;2H[23;64H2[1;2H[?25h[?25l[23;52H~@k[1;2H[23;52H   [1;3H[23;64H3[1;3H[?25h[?25l[23;52H~@k[1;3H[23;52H   [1;4H[23;64H4[1;4H[?25h[?25l[23;52H~@k[1;4H[23;52H   [1;5H[23;64H5[1;5H[?25h[?25l[23;52H~@k[1;5H[23;52H   [1;6H[23;64H6[1;6H[?25h[?25l[23;52H~@k[1;6H[23;52H   [1;7H[23;64H7[1;7H[?25h[?25l[23;52H~@k[1;7H[23;52H   [1;8H[23;64H8[1;8H[?25h[?25l[23;52H~@k[1;8H[23;52H   [1;9H[23;64H9[1;9H[?25h[?25l[23;52H~@k[1;9H[23;52H   [1;10H[23;64H10[1;10H[?25h[?25l[23;52H~@k[1;10H[23;52H   [1;11H[23;65H1[1;11H[?25h[?25l[23;52H~@k[1;11H[23;52H   [1;12H[23;65H2[1;12H[?25h[?25l[23;52H~@k[1;12H[23;52H   [1;13H[23;65H3[1;13H[?25h[?25l[23;52H~@k[1;13H[23;52H   [1;14H[23;65H4[1;14H[?25h[?25l[23;52H~@k[1;14H[23;52H   [1;15H[23;65H5[1;15H[?25h[?25l[23;52H~@k[1;15H[23;52H   [1;16H[23;65H6[1;16H[?25h[?25l[23;52H~@k[1;16H[23;52H   [1;17H[23;65H7[1;17H[?25h[?25l[23;52H~@k[1;17H[23;52H   [1;17H[?25h[?25l[23;52Ha[1;17H[23;52H [1;18H[23;1H[1m-- INSERT --[m[23;13H[K[23;62H1,18[10CAll[1;18H[?25h[?25l[23;65H7[1;17H[?25h[?25l[23;65H6[1;16H[?25h[?25l[23;65H5[1;15H[?25h[?25l[23;65H4[1;14H[?25h[?25l[23;65H3[1;13H[?25h[?25l[23;65H2[1;12H[?25h[?25l[23;65H1[1;11H[?25h[?25l[23;65H0[1;10H[?25h[?25l[23;64H9 [1;9H[?25h[?25l[23;64H8[1;8H[?25h[?25l[23;64H7[1;7H[?25h[?25l[23;64H6[1;6H[?25h[?25l[23;64H5[1;5H[?25h[?25l[23;64H4[1;4H[?25h[?25l[23;64H3[1;3H[?25h[?25l[23;64H2[1;2H[?25h[?25l[23;64H1[1;1H[?25h[?25l[2;22r[2;1H[L[1;23r[1;1H[K[2;1H[38;5;81m#include [m[95m"func.h"[m[23;62H[K[23;62H2,1[11CAll[2;1H[?25h[?25l[23;62H1[1;1H[?25h[?25l/[23;64H2[1;2H[?25h[?25l[96m//[m[23;64H3[1;3H[?25h[?25l[96mt[m[23;64H4[1;4H[?25h[?25l[96mh[m[23;64H5[1;5H[?25h[?25l[96mi[m[23;64H6[1;6H[?25h[?25l[96ms[m[23;64H7[1;7H[?25h[?25l[96m [m[23;64H8[1;8H[?25h[?25l[96mi[m[23;64H9[1;9H[?25h[?25l[96ms[m[23;64H10[1;10H[?25h[?25l[96m [m[23;65H1[1;11H[?25h[?25l[96mt[m[23;65H2[1;12H[?25h[?25l[96mh[m[23;65H3[1;13H[?25h[?25l[96me[m[23;65H4[1;14H[?25h[?25l[96m [m[23;65H5[1;15H[?25h[?25l[96mm[m[23;65H6[1;16H[?25h[?25l[96ma[m[23;65H7[1;17H[?25h[?25l[96mi[m[23;65H8[1;18H[?25h[?25l[96mn[m[23;65H9[1;19H[?25h[?25l[96m [m[23;64H20[1;20H[?25h[?25l[96mf[m[23;65H1[1;21H[?25h[?25l[96mi[m[23;65H2[1;22H[?25h[?25l[96ml[m[23;65H3[1;23H[?25h[?25l[96me[m[23;65H4[1;24H[?25h[23;1H[K[1;23H[?25l[23;52H^[[1;23H[23;52H  [1;24H[23;62H1,23[10CAll[1;23H[?25h[?25l[23;52H:[1;23H[23;52H[K[23;1H:[?2004h[?25hx[?25l[?2004l"main.cpp" 10L, 244C written[23;2t[23;1t
+[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ make
+g++ -c main.cpp
+g++ main.o trimmer.o parser.o -o hello
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vim version.cpp
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[1;23r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[23;1H"version.cpp" [New File][2;1H▽[6n[2;1H  [1;1H[>c]10;?]11;?[2;1H[94m~                                                                              [3;1H~                                                                              [4;1H~                                                                              [5;1H~                                                                              [6;1H~                                                                              [7;1H~                                                                              [8;1H~                                                                              [9;1H~                                                                              [10;1H~                                                                              [11;1H~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H0,0-1[9CAll[1;1H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\[27m[23m[29m[m[H[2J[?25l[2;1H[94m~                                                                              [3;1H~                                                                              [4;1H~                                                                              [5;1H~                                                                              [6;1H~                                                                              [7;1H~                                                                              [8;1H~                                                                              [9;1H~                                                                              [10;1H~                                                                              [11;1H~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H0,0-1[9CAll"version.cpp" [New File][1;1H[?25h[?25l[23;52Ha[1;1H[23;52H [1;1H[23;1H[1m-- INSERT --[m[23;13H[K[23;62H0,1[11CAll[1;1H[?25h[?25l#[23;62H1,2[1;2H[?25h[?25li[23;64H3[1;3H[?25h[?25ln[23;64H4[1;4H[?25h[?25lc[23;64H5[1;5H[?25h[?25ll[23;64H6[1;6H[?25h[?25lu[23;64H7[1;7H[?25h[?25ld[23;64H8[1;8H[?25h[?25le[23;64H9[1;9H[?25h[?25l[23;64H10[1;10H[?25h[?25l[38;5;81m#include [m[95m"[m[23;65H1[1;11H[?25h[?25l[95mf[m[23;65H2[1;12H[?25h[?25l[95mu[m[23;65H3[1;13H[?25h[?25l[95mn[m[23;65H4[1;14H[?25h[?25l[95mc[m[23;65H5[1;15H[?25h[?25l[95m.[m[23;65H6[1;16H[?25h[?25l[95mh[m[23;65H7[1;17H[?25h[?25l[95m"[m[23;65H8[1;18H[?25h[?25l[2;1H[K[23;62H2,1 [2;1H[?25h[?25l[3;1H[K[23;62H3[3;1H[?25h[?25le[23;64H2[3;2H[?25h[?25lx[23;64H3[3;3H[?25h[?25lt[23;64H4[3;4H[?25h[?25le[23;64H5[3;5H[?25h[?25lr[23;64H6[3;6H[?25h[?25l[38;5;121mextern[m[23;64H7[3;7H[?25h[?25l[23;64H8[3;8H[?25h[?25lf[23;64H9[3;9H[?25h[?25ll[23;64H10[3;10H[?25h[?25lo[23;65H1[3;11H[?25h[?25la[23;65H2[3;12H[?25h[?25l[38;5;121mfloat[m[23;65H3[3;13H[?25h[?25l[23;65H4[3;14H[?25h[?25lv[23;65H5[3;15H[?25h[?25la[23;65H6[3;16H[?25h[?25lr[23;65H7[3;17H[?25h[?25l;[23;65H8[3;18H[?25h[?25l[4;1H[K[23;62H4,1 [4;1H[?25h[?25l[5;1H[K[23;62H5[5;1H[?25h[?25lv[23;64H2[5;2H[?25h[?25lo[23;64H3[5;3H[?25h[?25li[23;64H4[5;4H[?25h[?25l[38;5;121mvoid[m[23;64H5[5;5H[?25h[?25l[23;64H6[5;6H[?25h[?25ld[23;64H7[5;7H[?25h[?25li[23;64H8[5;8H[?25h[?25ls[23;64H9[5;9H[?25h[?25lp[23;64H10[5;10H[?25h[?25ll[23;65H1[5;11H[?25h[?25la[23;65H2[5;12H[?25h[?25ly[23;65H3[5;13H[?25h[?25lV[23;65H4[5;14H[?25h[?25le[23;65H5[5;15H[?25h[?25lr[23;65H6[5;16H[?25h[?25ls[23;65H7[5;17H[?25h[?25li[23;65H8[5;18H[?25h[?25lo[23;65H9[5;19H[?25h[?25ln[23;64H20[5;20H[?25h[?25l([23;65H1[5;21H[?25h[?25l)[46m()[m[23;65H2[5;22H[?25h[?25l{()[23;65H3[5;23H[?25h[?25l
+        [6;9H[K[23;62H6,2-9[6;9H[?25h[?25lc[23;64H3-10[6;10H[?25h[?25lo[23;64H4-11[6;11H[?25h[?25lu[23;64H5-12[6;12H[?25h[?25lt[23;64H6-13[6;13H[?25h[?25l<[23;64H7-14[6;14H[?25h[?25l<[23;64H8-15[6;15H[?25h[?25l[95m"[m[23;64H9-16[6;16H[?25h[?25l[95mC[m[23;64H10-17[6;17H[?25h[?25l[95mu[m[23;65H1-18[6;18H[?25h[?25l[95mr[m[23;65H2-19[6;19H[?25h[?25l[95mr[m[23;65H3-20[6;20H[?25h[?25l[95me[m[23;65H4-21[6;21H[?25h[?25l[95mn[m[23;65H5-22[6;22H[?25h[?25l[95mt[m[23;65H6-23[6;23H[?25h[?25l[95m [m[23;65H7-24[6;24H[?25h[?25l[95mv[m[23;65H8-25[6;25H[?25h[?25l[95me[m[23;65H9-26[6;26H[?25h[?25l[95mr[m[23;64H20-27[6;27H[?25h[?25l[95ms[m[23;65H1-28[6;28H[?25h[?25l[95mi[m[23;65H2-29[6;29H[?25h[?25l[95mo[m[23;65H3-30[6;30H[?25h[?25l[95mn[m[23;65H4-31[6;31H[?25h[?25l[95m [m[23;65H5-32[6;32H[?25h[?25l[95mi[m[23;65H6-33[6;33H[?25h[?25l[95ms[m[23;65H7-34[6;34H[?25h[?25l[95m [m[23;65H8-35[6;35H[?25h[?25l[95m"[m[23;65H9-36[6;36H[?25h[?25l<[23;64H30-37[6;37H[?25h[?25l<[23;65H1-38[6;38H[?25h[?25lv[23;65H2-39[6;39H[?25h[?25la[23;65H3-40[6;40H[?25h[?25lr[23;65H4-41[6;41H[?25h[?25l<[23;65H5-42[6;42H[?25h[?25l<[23;65H6-43[6;43H[?25h[?25le[23;65H7-44[6;44H[?25h[?25ln[23;65H8-45[6;45H[?25h[?25ld[23;65H9-46[6;46H[?25h[?25ll[23;64H40-47[6;47H[?25h[?25l;[23;65H1-48[6;48H[?25h[?25l
+        [7;9H[K[23;62H7,2-9  [7;9H[?25h[?25l[23;64H1  [7;1H[?25h[?25l}[5;22H[46m{
+
+}[m[23;64H2[7;2H[?25h[23;1H[K[7;1H[?25l[23;52H^[[7;1H[23;52H  [7;2H[23;62H7,1[11CAll[7;1H[?25h[?25l[23;52H:[7;1H[23;52H[K[23;1H:[?2004h[?25hx[?25l[?2004l"version.cpp" [New] 7L, 104C written[23;2t[23;1t
+[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vim func.h 
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[1;23r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[23;1H"func.h" 10L, 166C[2;1H▽[6n[2;1H  [1;1H[>c]10;?]11;?[1;1H[35m#include [m[31m<iostream>[m
+[35m#include [m[31m<string>[m
+
+[38;5;130musing[m std::cout;
+[38;5;130musing[m std::endl;
+[38;5;130musing[m std::string;
+
+string _trim([32mconst[m string& str);
+[32mvoid[m parse_url([32mconst[m string& raw_url);
+
+[94m~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll[1;1H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\[27m[23m[29m[m[H[2J[?25l[1;1H[38;5;81m#include [m[95m<iostream>[m
+[38;5;81m#include [m[95m<string>[m
+
+[93musing[m std::cout;
+[93musing[m std::endl;
+[93musing[m std::string;
+
+string _trim([38;5;121mconst[m string& str);
+[38;5;121mvoid[m parse_url([38;5;121mconst[m string& raw_url);
+
+[94m~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll"func.h" 10L, 166C[1;1H[?25h[?25l[23;52H~@k[1;1H[23;52H   [2;1H[23;62H2[2;1H[?25h[?25l[23;52H~@k[2;1H[23;52H   [3;1H[23;62H3,0-1[3;1H[?25h[?25l[23;52H~@k[3;1H[23;52H   [4;1H[23;62H4,1  [4;1H[?25h[?25l[23;52H~@k[4;1H[23;52H   [5;1H[23;62H5[5;1H[?25h[?25l[23;52H~@k[5;1H[23;52H   [6;1H[23;62H6[6;1H[?25h[?25l[23;52H~@k[6;1H[23;52H   [7;1H[23;62H7,0-1[7;1H[?25h[?25l[23;52H~@k[7;1H[23;52H   [8;1H[23;62H8,1  [8;1H[?25h[?25l[23;52H~@k[8;1H[23;52H   [9;1H[23;62H9[9;1H[?25h[?25l[23;52H~@k[9;1H[23;52H   [10;1H[23;62H10,0-1[10;1H[?25h[?25l[23;52Hv[10;1H[23;52H1[10;1H[23;1H[1m-- VISUAL --[m[23;13H[K[23;52H1[10;1H[23;62H10,0-1[8CAll[10;1H[?25h[?25l[23;52Ho[10;1H[23;52H1[10;1H[?25h[?25l[23;52Hi[10;1H[?25h[?25l[23;53Hd[10;1H[23;52H1 [10;1H[?25h[?25l[23;52H<20>[10;1H[23;52H1   [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Hv[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Ha[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Ha[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Ha[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Hq[10;1H[?25h[?25l[23;53H^[[10;1H[23;53H  [10;1H[23;53H^[[10;1H[23;52H1  [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Ha[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Hf[10;1H[23;52H1 [10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H2  [9;39H
+[48;5;242m [m[23;62H9,39  [9;39H[?25h[?25l[23;52H~@k[9;39H[23;52H2  [9;38H;[48;5;242m [m[23;65H8[9;38H[?25h[?25l[23;52H~@k[9;38H[23;52H2  [9;39H[9;39H[K[23;65H9[9;39H[?25h[?25l[23;52H~@k[9;39H[23;52H1  [10;1H[10;1H[K[23;62H10,0-1[10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H1  [10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H1  [10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H1  [10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H1  [10;1H[?25h[?25l[23;52H~@k[10;1H[23;52H1  [10;1H[?25h[?25l[23;52Ha[10;1H[?25h[?25l[23;53Ha[10;1H[23;52H1 [10;1H[?25h[?25l[23;52Hv[10;1H[23;52H [10;1H[23;1H[K[23;62H10,0-1[8CAll[10;1H[?25h[?25l[23;52Hv[10;1H[23;52H1[10;1H[23;1H[1m-- VISUAL --[m[23;52H[K[23;52H1[10;1H[23;62H10,0-1[8CAll[10;1H[?25h[?25l[23;52Hv[10;1H[23;52H [10;1H[23;1H[K[23;62H10,0-1[8CAll[10;1H[?25h[?25l[23;52Ha[10;1H[23;52H [10;1H[23;1H[1m-- INSERT --[m[23;62H[K[23;62H10,1[10CAll[10;1H[?25h[?25lv[23;65H2[10;2H[?25h[?25lo[23;65H3[10;3H[?25h[?25li[23;65H4[10;4H[?25h[?25l[38;5;121mvoid[m[23;65H5[10;5H[?25h[?25l[23;65H6[10;6H[?25h[?25ld[23;65H7[10;7H[?25h[?25li[23;65H8[10;8H[?25h[?25ls[23;65H9[10;9H[?25h[?25lp[23;65H10[10;10H[?25h[?25ll[23;66H1[10;11H[?25h[?25la[23;66H2[10;12H[?25h[?25ly[23;66H3[10;13H[?25h[?25lV[23;66H4[10;14H[?25h[?25le[23;66H5[10;15H[?25h[?25lr[23;66H6[10;16H[?25h[?25ls[23;66H7[10;17H[?25h[?25li[23;66H8[10;18H[?25h[?25lo[23;66H9[10;19H[?25h[?25ln[23;65H20[10;20H[?25h[?25l([23;66H1[10;21H[?25h[?25l)[46m()[m[23;66H2[10;22H[?25h[?25l;()[23;66H3[10;23H[?25h[23;1H[K[10;22H[?25l[23;52H^[[10;22H[23;52H  [10;23H[23;62H10,22[9CAll[10;22H[?25h[?25l[23;52H:[10;22H[23;52H[K[23;1H:[?2004h[?25hx[?25l[?2004l"func.h" 10L, 188C written[23;2t[23;1t
+[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vim main.cpp
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[1;23r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[23;1H"main.cpp" 10L, 244C[2;1H▽[6n[2;1H  [1;1H[>c]10;?]11;?[1;1H[34m//this is the main file[m
+[35m#include [m[31m"func.h"[m
+
+[32mint[m main([32mint[m argc, [32mchar[m* argv[])
+{
+    parse_url([31m"http://www.google.com"[m);
+    parse_url([31m"https://mail.google.com/mail/"[m);
+    parse_url([31m"https://www.google.com:443/webhp?gws_rd=ssl"[m);
+    [38;5;130mreturn[m [31m0[m;
+}
+[94m~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,23[10CAll[1;23H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\[27m[23m[29m[m[H[2J[?25l[1;1H[96m//this is the main file[m
+[38;5;81m#include [m[95m"func.h"[m
+
+[38;5;121mint[m main([38;5;121mint[m argc, [38;5;121mchar[m* argv[])
+{
+    parse_url([95m"http://www.google.com"[m);
+    parse_url([95m"https://mail.google.com/mail/"[m);
+    parse_url([95m"https://www.google.com:443/webhp?gws_rd=ssl"[m);
+    [93mreturn[m [95m0[m;
+}
+[94m~                                                                              [12;1H~                                                                              [13;1H~                                                                              [14;1H~                                                                              [15;1H~                                                                              [16;1H~                                                                              [17;1H~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,23[10CAll"main.cpp" 10L, 244C[1;23H[?25h[?25l[23;52H~@k[1;23H[23;52H   [2;17H[23;62H2,17[2;17H[?25h[?25l[23;52H~@k[2;17H[23;52H   [3;1H[23;62H3,0-1[3;1H[?25h[?25l[23;52Ha[3;1H[23;52H [3;1H[23;1H[1m-- INSERT --[m[23;13H[K[23;62H3,1[11CAll[3;1H[?25h[?25lf[23;64H2[3;2H[?25h[?25ll[23;64H3[3;3H[?25h[?25lo[23;64H4[3;4H[?25h[?25la[23;64H5[3;5H[?25h[?25l[38;5;121mfloat[m[23;64H6[3;6H[?25h[?25l[23;64H7[3;7H[?25h[?25lv[23;64H8[3;8H[?25h[?25la[23;64H9[3;9H[?25h[?25lr[23;64H10[3;10H[?25h[?25l;[23;65H1[3;11H[?25h[?25l[4;22r[4;1H[L[1;23r[23;62H[K[23;62H4,1[11CAll[4;1H[?25h[?25l[23;62H5[5;1H[?25h[?25l
+[46m{[11;1H}[m[23;62H6[6;1H[?25h[?25l[23;64H2[6;2H[?25h[?25l[23;64H1[6;1H[?25h[?25l{[11;1H}[23;62H7[7;1H[?25h[?25l[8;22r[8;1H[L[1;23r[7;5H[K[8;9Hparse_url([95m"http://www.google.com"[m);[23;62H[K[23;62H8,5[11CAll[8;5H[?25h[?25l[23;64H6-9[8;9H[?25h[?25lparse_url([95m"http://www.google.com"[m);[8;40H[K[23;64H5  [8;5H[?25h[?25l[23;62H7,1[7;1H[?25h[?25l[23;64H2-9[7;9H[?25h[?25l[23;64H1  [7;1H[?25h[?25l[23;64H2[7;2H[?25h[?25l[23;64H3[7;3H[?25h[?25l[23;64H4[7;4H[?25h[?25l[23;64H5[7;5H[?25h[?25lv[23;64H6[7;6H[?25h[?25la[23;64H7[7;7H[?25h[?25lr[23;64H8[7;8H[?25h[?25l=[23;64H9[7;9H[?25h[?25l[95m1[m[23;64H10[7;10H[?25h[?25l[95m.[m[23;65H1[7;11H[?25h[?25l[95m2[m[23;65H2[7;12H[?25h[?25l;[23;65H3[7;13H[?25h[?25l[8;22r[8;1H[L[1;23r[23;62H[K[23;62H8,5[11CAll[8;5H[?25h[?25ld[23;64H6[8;6H[?25h[?25li[23;64H7[8;7H[?25h[?25ls[23;64H8[8;8H[?25h[?25lp[23;64H9[8;9H[?25h[?25ll[23;64H10[8;10H[?25h[?25la[23;65H1[8;11H[?25h[?25ly[23;65H2[8;12H[?25h[?25lV[23;65H3[8;13H[?25h[?25le[23;65H4[8;14H[?25h[?25lr[23;65H5[8;15H[?25h[?25ls[23;65H6[8;16H[?25h[?25li[23;65H7[8;17H[?25h[?25lo[23;65H8[8;18H[?25h[?25ln[23;65H9[8;19H[?25h[?25l([23;64H20[8;20H[?25h[?25l)[46m()[m[23;65H1[8;21H[?25h[?25l;()[23;65H2[8;22H[?25h[23;1H[K[8;21H[?25l[23;52H^[[8;21H[23;52H  [8;22H[23;62H8,21[10CAll[8;21H[?25h[?25l[23;52H:[8;21H[23;52H[K[23;1H:[?2004h[?25hx[?25l[?2004l"main.cpp" 13L, 290C written[23;2t[23;1t
+[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vim Makefile 
+[?1049h[22;0;0t[>4;2m[?1h=[?2004h[1;23r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[23;1H"Makefile" [noeol] 16L, 229C[2;1H▽[6n[2;1H  [1;1H[>c]10;?]11;?[1;1H[36mall:[m hello
+
+[36mhello:[m main.o trimmer.o parser.o
+[31m        g++ main.o trimmer.o parser.o -o hello[m
+
+[36mmain.o:[m main.cpp
+[31m        g++ -c main.cpp[m
+
+[36mtrimmer.o:[m trimmer.cpp
+[31m        g++ -c trimmer.cpp[m
+
+[36mparser.o:[m parser.cpp
+[31m        g++ -c parser.cpp[m
+
+[36mclean:[m
+[31m        rm -rf *o hello[m
+[94m~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll[1;1H[?25hP+q436f\P+q6b75\P+q6b64\P+q6b72\P+q6b6c\P+q2332\P+q2334\P+q2569\P+q2a37\P+q6b31\[27m[23m[29m[m[H[2J[?25l[1;1H[1m[96mall:[m hello
+
+[1m[96mhello:[m main.o trimmer.o parser.o
+[95m        g++ main.o trimmer.o parser.o -o hello[m
+
+[1m[96mmain.o:[m main.cpp
+[95m        g++ -c main.cpp[m
+
+[1m[96mtrimmer.o:[m trimmer.cpp
+[95m        g++ -c trimmer.cpp[m
+
+[1m[96mparser.o:[m parser.cpp
+[95m        g++ -c parser.cpp[m
+
+[1m[96mclean:[m
+[95m        rm -rf *o hello[m
+[94m~                                                                              [18;1H~                                                                              [19;1H~                                                                              [20;1H~                                                                              [21;1H~                                                                              [22;1H~                                                                              [m[23;62H1,1[11CAll"Makefile" [noeol] 16L, 229C[1;1H[?25h[?25l[23;52Ha[1;1H[23;52H [1;2H[23;1H[1m-- INSERT --[m[23;13H[K[23;62H1,2[11CAll[1;2H[?25h[?25l[23;62H2,1[2;1H[?25h[?25l[23;62H3,2[3;2H[?25h[?25l[23;64H3[3;3H[?25h[?25l[23;64H4[3;4H[?25h[?25l[23;64H5[3;5H[?25h[?25l[23;64H6[3;6H[?25h[?25l[23;64H7[3;7H[?25h[?25l[23;64H8[3;8H[?25h[?25l[23;64H9[3;9H[?25h[?25l[23;64H10[3;10H[?25h[?25l[23;65H1[3;11H[?25h[?25l[23;65H2[3;12H[?25h[?25l[23;65H3[3;13H[?25h[?25l[23;65H4[3;14H[?25h[?25l[23;65H5[3;15H[?25h[?25lvtrimmer.o parser.o[23;65H6[3;16H[?25h[?25letrimmer.o parser.o[23;65H7[3;17H[?25h[?25lrtrimmer.o parser.o[23;65H8[3;18H[?25h[?25lstrimmer.o parser.o[23;65H9[3;19H[?25h[?25litrimmer.o parser.o[23;64H20[3;20H[?25h[?25lotrimmer.o parser.o[23;65H1[3;21H[?25h[?25lntrimmer.o parser.o[23;65H2[3;22H[?25h[?25l.trimmer.o parser.o[23;65H3[3;23H[?25h[?25lotrimmer.o parser.o[23;65H4[3;24H[?25h[?25l trimmer.o parser.o[23;65H5[3;25H[?25h[?25l[23;62H4,18-25[4;25H[?25h[?25l[23;65H7-24[4;24H[?25h[?25l[23;65H6-23[4;23H[?25h[?25l[23;65H5-22[4;22H[?25h[?25l[23;65H4-21[4;21H[?25h[?25l[23;65H3-20[4;20H[?25h[?25l[95mvtrimmer.o parser.o -o hello[m[23;65H4-21[4;21H[?25h[?25l[95metrimmer.o parser.o -o hello[m[23;65H5-22[4;22H[?25h[?25l[95mrtrimmer.o parser.o -o hello[m[23;65H6-23[4;23H[?25h[?25l[95mstrimmer.o parser.o -o hello[m[23;65H7-24[4;24H[?25h[?25l[95mitrimmer.o parser.o -o hello[m[23;65H8-25[4;25H[?25h[?25l[95motrimmer.o parser.o -o hello[m[23;65H9-26[4;26H[?25h[?25l[95mntrimmer.o parser.o -o hello[m[23;64H20-27[4;27H[?25h[?25l[95m.trimmer.o parser.o -o hello[m[23;65H1-28[4;28H[?25h[?25l[95motrimmer.o parser.o -o hello[m[23;65H2-29[4;29H[?25h[?25l[95m trimmer.o parser.o -o hello[m[23;65H3-30[4;30H[?25h[?25l[23;62H5,1    [5;1H[?25h[?25l[6;22r[6;1H[L[1;23r[23;62H[K[23;62H6,1[11CAll[6;1H[?25h[?25l[23;62H5[5;1H[?25h[?25l[6;22r[6;1H[L[1;23r[23;62H[K[23;62H6,1[11CAll[6;1H[?25h[?25lv[23;64H2[6;2H[?25h[?25le[23;64H3[6;3H[?25h[?25lr[23;64H4[6;4H[?25h[?25ls[23;64H5[6;5H[?25h[?25li[23;64H6[6;6H[?25h[?25lo[23;64H7[6;7H[?25h[?25l[6;6H[K[23;64H6[6;6H[?25h[?25l[6;5H[K[23;64H5[6;5H[?25h[?25l[6;4H[K[23;64H4[6;4H[?25h[?25l[6;3H[K[23;64H3[6;3H[?25h[?25l[6;2H[K[23;64H2[6;2H[?25h[?25l[6;1H[K[23;64H1[6;1H[?25h[?25l[5;22r[22;1H
+[1;23r[22;1H[94m~                                                                              [m[23;62H[K[23;62H5,1[11CAll[5;1H[?25h[?25l[4;22r[22;1H
+[1;23r[4;1H[95m        g++ main.o version.o trimmer.o parser.o -o hello[m[22;1H[94m~                                                                              [m[23;62H[K[23;62H4,50-57[7CAll[4;57H[?25h[?25l[23;62H5,1    [5;1H[?25h[?25l[23;62H6,17[6;17H[?25h[?25l[23;62H7,17-24[7;24H[?25h[?25l[23;62H8,1    [8;1H[?25h[?25l[9;22r[9;1H[L[1;23r[23;62H[K[23;62H9,1[11CAll[9;1H[?25h[?25l[23;62H8[8;1H[?25h[?25l[9;22r[9;1H[L[1;23r[23;62H[K[23;62H9,1[11CAll[9;1H[?25h[?25lv[23;64H2[9;2H[?25h[?25le[23;64H3[9;3H[?25h[?25lr[23;64H4[9;4H[?25h[?25ls[23;64H5[9;5H[?25h[?25li[23;64H6[9;6H[?25h[?25lo[23;64H7[9;7H[?25h[?25ln[23;64H8[9;8H[?25h[?25l.[23;64H9[9;9H[?25h[?25lo[23;64H10[9;10H[?25h[?25l[1m[96mversion.o:[m[23;65H1[9;11H[?25h[?25l[1m[96m [m[23;65H2[9;12H[?25h[?25l v[23;65H3[9;13H[?25h[?25le[23;65H4[9;14H[?25h[?25lr[23;65H5[9;15H[?25h[?25ls[23;65H6[9;16H[?25h[?25li[23;65H7[9;17H[?25h[?25lo[23;65H8[9;18H[?25h[?25ln[23;65H9[9;19H[?25h[?25l.[23;64H20[9;20H[?25h[?25lc[23;65H1[9;21H[?25h[?25lp[23;65H2[9;22H[?25h[?25lp[23;65H3[9;23H[?25h[?25l[10;22r[10;1H[L[1;23r[10;1H[95m        [m[23;62H[K[23;62H10,2-9[8CAll[10;9H[?25h[?25l[10;1H[K[23;65H1  [10;1H[?25h[?25l[95m        [m[23;65H2-9[10;9H[?25h[?25l[95mg[m[23;65H3-10[10;10H[?25h[?25l[95m+[m[23;65H4-11[10;11H[?25h[?25l[95m+[m[23;65H5-12[10;12H[?25h[?25l[95m [m[23;65H6-13[10;13H[?25h[?25l[95m-[m[23;65H7-14[10;14H[?25h[?25l[95mc[m[23;65H8-15[10;15H[?25h[?25l[95m [m[23;65H9-16[10;16H[?25h[?25l[95mv[m[23;65H10-17[10;17H[?25h[?25l[95me[m[23;66H1-18[10;18H[?25h[?25l[95mr[m[23;66H2-19[10;19H[?25h[?25l[95ms[m[23;66H3-20[10;20H[?25h[?25l[95mi[m[23;66H4-21[10;21H[?25h[?25l[95mo[m[23;66H5-22[10;22H[?25h[?25l[95mn[m[23;66H6-23[10;23H[?25h[?25l[95m.[m[23;66H7-24[10;24H[?25h[?25l[95mc[m[23;66H8-25[10;25H[?25h[?25l[95mp[m[23;66H9-26[10;26H[?25h[?25l[95mp[m[23;65H20-27[10;27H[?25h[23;1H[K[10;26H[?25l[23;52H^[[10;26H[23;52H  [10;27H[23;62H10,19-26      All[10;26H[?25h[?25l[23;52H:[10;26H[23;52H[K[23;1H:[?2004h[?25hx[?25l[?2004l"Makefile" 19L, 294C written[23;2t[23;1t
+[?2004l[?1l>[?25h[>4;m[?1049l[23;0;0t]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat version.cpp 
+#include "func.h"
+
+extern float var;
+
+void displayVersion(){
+	cout<<"Current version is "<<var<<endl;
+}
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ vat[K[K[Kcat main.cpp 
+//this is the main file
+#include "func.h"
+float var;
+
+int main(int argc, char* argv[])
+{
+    var=1.2;
+    displayVersion();
+    parse_url("http://www.google.com");
+    parse_url("https://mail.google.com/mail/");
+    parse_url("https://www.google.com:443/webhp?gws_rd=ssl");
+    return 0;
+}
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat Makefile 
+all: hello
+
+hello: main.o version.o trimmer.o parser.o
+	g++ main.o version.o trimmer.o parser.o -o hello
+
+main.o: main.cpp
+	g++ -c main.cpp
+
+version.o: version.cpp
+	g++ -c version.cpp
+
+trimmer.o: trimmer.cpp
+	g++ -c trimmer.cpp
+
+parser.o: parser.cpp
+	g++ -c parser.cpp
+
+clean:
+	rm -rf *o hello
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ cat func.h 
+#include <iostream>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+string _trim(const string& str);
+void parse_url(const string& raw_url);
+void displayVersion();
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ make
+g++ -c main.cpp
+g++ -c version.cpp
+g++ main.o version.o trimmer.o parser.o -o hello
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ ./hello 
+Current version is 1.2
+[http://www.google.com]
+protocol: http
+domain: www.google.com
+port: 
+path: 
+query: 
+[https://mail.google.com/mail/]
+protocol: https
+domain: mail.google.com
+port: 
+path: /mail/
+query: 
+[https://www.google.com:443/webhp?gws_rd=ssl]
+protocol: https
+domain: www.google.com
+port: 443
+path: /webhp
+query: gws_rd=ssl
+]0;ubuntu@ubuntu-Inspiron-5567: ~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[01;32mubuntu@ubuntu-Inspiron-5567[00m:[01;34m~/Downloads/assignment/programming assignment 1/programming assignment 1/assignment[00m$ exit
+exit
+
+Script done on 2021-10-21 23:02:14+05:45 [COMMAND_EXIT_CODE="0"]
